@@ -1,7 +1,7 @@
 Package.describe({
   name: 'nucleuside:simplewebrtc',
   version: '0.0.1',
-  summary: 'Video chat using webrtc for Nucleus',
+  summary: 'SimpleWebRTC packaged for meteor, including signalmaster server. ',
   git: '',
   documentation: 'README.md'
 });
