@@ -16,6 +16,12 @@ Npm.depends({
 Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
 
+  api.use([
+    'tracker',
+    'underscore',
+    'mrt:moment@2.8.1'
+  ]);
+
   // SimpleWebRTC's latest.js script had problems when it was loaded from
   // within meteor as a regular javascript. I could not make it work from
   // within meteor, it might be possible though. There were too many things
@@ -35,6 +41,12 @@ Package.onUse(function(api) {
   //TODO: Make it configurable whether to run the server or not
   api.addFiles('lib/simplewebrtc_server.js', 'server');
 
+  //This file is for adding a collection and methods for sending messages to all clients.
+  //These methods are meant to be used when webrtc is not the main part of the app and is not
+  //initialized until needed. In such case, use these methods to tell the client to turn on
+  //the webrtc interface so it can connect.
+  api.addFiles('webrtc.js');
   // we don't need to export this global because SimpleWebRTC script exports it to window by itself
   // api.export('SimpleWebRTC', ['client']);
+  api.export('MeteorWebrtc');
 });
