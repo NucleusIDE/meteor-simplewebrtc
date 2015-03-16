@@ -6,12 +6,14 @@ var WebrtcExtension = function() {
 };
 
 WebrtcExtension.prototype.broadcast = function(message, payload) {
-  console.log('Broadcasting', message, payload);
   WebRtcColl.insert({message: message, payload: payload, created_at: moment().toDate()});
 };
 WebrtcExtension.prototype.on = function(messageType, callback) {
   this._callbacks[messageType] = this._callbacks[messageType] || [];
   this._callbacks[messageType].push(callback);
+};
+WebrtcExtension.prototype.off = function(messageType, callback) {
+  this._callbacks[messageType] = [];
 };
 
 MeteorWebrtc = new WebrtcExtension();
@@ -21,7 +23,7 @@ if (Meteor.isClient) {
 
   //autorun for executing callbacks set on MeteorWebrtc when new messages arrive
   Tracker.autorun(function() {
-    var newMessages = _.reject(WebRtcColl.find({created_at: {$lt: moment().add({minutes: 10}).toDate()}}, {sort: {created_at: -1}}).fetch(), function(msg) {
+    var newMessages = _.reject(WebRtcColl.find({created_at: {$lt: moment().add({minutes: 5}).toDate()}}, {sort: {created_at: -1}}).fetch(), function(msg) {
       return _.contains(MeteorWebrtc._messagesAlreadyHandled, msg._id);
     });
 
@@ -51,8 +53,8 @@ if (Meteor.isServer) {
 
   Meteor.publish('webrtc_coll_latest_messages', function(limit) {
     limit = limit || 30;
-    //publish latest 30 messages which are at most 10 minutes old
-    var webrtcMessages = WebRtcColl.find({created_at: {$lt: moment().add({minutes: 10}).toDate()}}, {sort: {created_at: -1}, limit: limit});
+    //publish latest 30 messages which are at most 2 minutes old
+    var webrtcMessages = WebRtcColl.find({created_at: {$lt: moment().add({minutes: 5}).toDate()}}, {sort: {created_at: -1}, limit: limit});
     return webrtcMessages;
   });
 }
